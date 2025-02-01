@@ -8,36 +8,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { toast } from "@/components/ui/use-toast"
-import { useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
-
-interface Wallet {
-  id: string
-  name: string
-  address: string
-  balance: number
-}
+import { useWallets } from "@/store/wallets"
+import { useSelectedWallet } from "@/store/selected-wallet";
 
 interface WalletHeaderProps {
-  selectedWallet: Wallet
-  wallets: Wallet[]
-  onSelectWallet: (wallet: Wallet) => void
-  onCreateWallet: () => void
-  onImportWallet: () => void
-  onRenameWallet: () => void
   isLoading: boolean
+  openCreateWallet: () => void
+  openImportWallet: () => void
+  openRenameWallet: () => void
 }
 
-export function WalletHeader({
-  selectedWallet,
-  wallets,
-  onSelectWallet,
-  onCreateWallet,
-  onImportWallet,
-  onRenameWallet,
-  isLoading,
-}: WalletHeaderProps) {
-  const [isCopied, setIsCopied] = useState(false)
+export function WalletHeader({isLoading, openCreateWallet, openRenameWallet, openImportWallet}: WalletHeaderProps) {
+  const {wallets} = useWallets()
+  const [selectedWallet, setSelectedWallet] = useSelectedWallet()
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(
@@ -58,7 +42,7 @@ export function WalletHeader({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <h2 className="text-2xl font-semibold">{selectedWallet.name}</h2>
-          <Button variant="ghost" size="sm" className="p-0" onClick={onRenameWallet}>
+          <Button variant="ghost" size="sm" className="p-0" onClick={openRenameWallet}>
             <Edit className="h-4 w-4" />
             <span className="sr-only">Rename Wallet</span>
           </Button>
@@ -72,7 +56,7 @@ export function WalletHeader({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {wallets.map((wallet) => (
-              <DropdownMenuItem key={wallet.id} onClick={() => onSelectWallet(wallet)}>
+              <DropdownMenuItem key={wallet.address} onClick={() => setSelectedWallet(wallet)}>
                 <div className="flex flex-col">
                   <span className="font-medium">{wallet.name}</span>
                   <span className="text-xs text-muted-foreground">{wallet.address}</span>
@@ -80,11 +64,11 @@ export function WalletHeader({
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onCreateWallet}>
+            <DropdownMenuItem onClick={openCreateWallet}>
               <Plus className="mr-2 h-4 w-4" />
               <span>Create New Wallet</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onImportWallet}>
+            <DropdownMenuItem onClick={openImportWallet}>
               <Download className="mr-2 h-4 w-4" />
               <span>Import from Private Key</span>
             </DropdownMenuItem>
@@ -106,7 +90,7 @@ export function WalletHeader({
             </Button>
           </div>
           <div className="text-3xl font-bold">
-            {isLoading ? <Skeleton className="h-9 w-32" /> : `$${selectedWallet.balance.toLocaleString()}`}
+            {isLoading ? <Skeleton className="h-9 w-32" /> : `$10,000`}
           </div>
         </div>
       </div>

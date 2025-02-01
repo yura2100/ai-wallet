@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Wallet, MessageSquare } from "lucide-react"
 import type React from "react"
 import { usePathname } from "next/navigation"
+import './globals.css'
+import {ClientOnly} from "@/components/client-only";
+import {StoreProvider} from "@/store/store-provider";
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -45,13 +48,13 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="min-h-screen bg-background text-foreground">
           <NavBar />
-          <main className="container mx-auto px-4 py-8">{children}</main>
+          <main className="container mx-auto px-4 py-8">
+            <StoreProvider>
+              <ClientOnly>{children}</ClientOnly>
+            </StoreProvider>
+          </main>
         </div>
       </body>
     </html>
   )
 }
-
-
-
-import './globals.css'
