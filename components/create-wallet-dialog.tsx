@@ -10,23 +10,28 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import {useWallets} from "@/store/wallets";
+import {useSelectedWallet} from "@/store/selected-wallet";
 
 interface CreateWalletDialogProps {
   isOpen: boolean
-  onOpenChange: (open: boolean) => void
-  onCreateWallet: (name: string) => void
+  setIsOpen: (open: boolean) => void
 }
 
-export function CreateWalletDialog({ isOpen, onOpenChange, onCreateWallet }: CreateWalletDialogProps) {
+export function CreateWalletDialog({ isOpen, setIsOpen }: CreateWalletDialogProps) {
   const [newWalletName, setNewWalletName] = useState("")
+  const { createWallet } = useWallets();
+  const [, setSelectedWallet] = useSelectedWallet();
 
   const handleCreateWallet = () => {
-    onCreateWallet(newWalletName)
-    setNewWalletName("")
+    const wallet = createWallet(newWalletName);
+    setSelectedWallet(wallet);
+    setNewWalletName("");
+    setIsOpen(false);
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white">Create New Wallet</DialogTitle>

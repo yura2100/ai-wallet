@@ -12,21 +12,8 @@ import { ImportWalletDialog } from "./import-wallet-dialog"
 import { RenameWalletDialog } from "./rename-wallet-dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-interface Wallet {
-  id: string
-  name: string
-  address: string
-  balance: number
-}
-
 export function Wallet() {
   const [isLoading, setIsLoading] = useState(true)
-  const [wallets, setWallets] = useState<Wallet[]>([
-    { id: "1", name: "Main Wallet", address: "0x1234...5678", balance: 19500 },
-    { id: "2", name: "Savings", address: "0x5678...9012", balance: 5000 },
-    { id: "3", name: "Trading", address: "0x9012...3456", balance: 2500 },
-  ])
-  const [selectedWallet, setSelectedWallet] = useState<Wallet>(wallets[0])
   const [tokens, setTokens] = useState([
     {
       id: 1,
@@ -73,39 +60,6 @@ export function Wallet() {
     }
   }
 
-  const handleCreateWallet = (name: string) => {
-    const newWallet: Wallet = {
-      id: (wallets.length + 1).toString(),
-      name: name,
-      address: `0x${Math.random().toString(16).substr(2, 40)}`,
-      balance: 0,
-    }
-    setWallets([...wallets, newWallet])
-    setSelectedWallet(newWallet)
-    setIsCreateWalletOpen(false)
-  }
-
-  const handleImportWallet = (privateKey: string) => {
-    const newWallet: Wallet = {
-      id: (wallets.length + 1).toString(),
-      name: `Imported Wallet ${wallets.length + 1}`,
-      address: `0x${privateKey.substr(0, 4)}...${privateKey.substr(-4)}`,
-      balance: 0,
-    }
-    setWallets([...wallets, newWallet])
-    setSelectedWallet(newWallet)
-    setIsImportWalletOpen(false)
-  }
-
-  const handleRenameWallet = (newName: string) => {
-    const updatedWallets = wallets.map((wallet) =>
-      wallet.id === selectedWallet.id ? { ...wallet, name: newName } : wallet,
-    )
-    setWallets(updatedWallets)
-    setSelectedWallet({ ...selectedWallet, name: newName })
-    setIsRenameWalletOpen(false)
-  }
-
   useEffect(() => {
     // Simulate loading delay
     const timer = setTimeout(() => {
@@ -119,13 +73,10 @@ export function Wallet() {
     <Card className="w-full h-[80vh] flex flex-col">
       <CardHeader>
         <WalletHeader
-          selectedWallet={selectedWallet}
-          wallets={wallets}
-          onSelectWallet={setSelectedWallet}
-          onCreateWallet={() => setIsCreateWalletOpen(true)}
-          onImportWallet={() => setIsImportWalletOpen(true)}
-          onRenameWallet={() => setIsRenameWalletOpen(true)}
           isLoading={isLoading}
+          openCreateWallet={() => setIsCreateWalletOpen(true)}
+          openImportWallet={() => setIsImportWalletOpen(true)}
+          openRenameWallet={() => setIsRenameWalletOpen(true)}
         />
         <SendDialog tokens={tokens} />
       </CardHeader>
@@ -141,22 +92,17 @@ export function Wallet() {
           </Tabs>
         </ScrollArea>
       </CardContent>
-
       <CreateWalletDialog
         isOpen={isCreateWalletOpen}
-        onOpenChange={setIsCreateWalletOpen}
-        onCreateWallet={handleCreateWallet}
+        setIsOpen={setIsCreateWalletOpen}
       />
       <ImportWalletDialog
         isOpen={isImportWalletOpen}
-        onOpenChange={setIsImportWalletOpen}
-        onImportWallet={handleImportWallet}
+        setIsOpen={setIsImportWalletOpen}
       />
       <RenameWalletDialog
         isOpen={isRenameWalletOpen}
-        onOpenChange={setIsRenameWalletOpen}
-        onRenameWallet={handleRenameWallet}
-        currentName={selectedWallet.name}
+        setIsOpen={setIsRenameWalletOpen}
       />
     </Card>
   )

@@ -10,23 +10,31 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import {useWallets} from "@/store/wallets";
+import {useSelectedWallet} from "@/store/selected-wallet";
+import {Hex} from "viem";
 
 interface ImportWalletDialogProps {
   isOpen: boolean
-  onOpenChange: (open: boolean) => void
-  onImportWallet: (privateKey: string) => void
+  setIsOpen: (open: boolean) => void
 }
 
-export function ImportWalletDialog({ isOpen, onOpenChange, onImportWallet }: ImportWalletDialogProps) {
+export function ImportWalletDialog({ isOpen, setIsOpen }: ImportWalletDialogProps) {
+  const [name, setName] = useState("")
   const [privateKey, setPrivateKey] = useState("")
+  const { importWallet } = useWallets();
+  const [, setSelectedWallet] = useSelectedWallet();
 
   const handleImportWallet = () => {
-    onImportWallet(privateKey)
+    const wallet = importWallet(name, privateKey as Hex);
+    setSelectedWallet(wallet);
+    setName("");
     setPrivateKey("")
+    setIsOpen(false);
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white">Import Wallet</DialogTitle>
@@ -35,6 +43,19 @@ export function ImportWalletDialog({ isOpen, onOpenChange, onImportWallet }: Imp
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-sm font-medium text-white">
+              Wallet Name
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter wallet name"
+              className="text-white"
+              type="text"
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="privateKey" className="text-sm font-medium text-white">
               Private Key
