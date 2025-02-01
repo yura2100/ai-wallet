@@ -15,7 +15,12 @@ export function useTransactions() {
       });
 
       if (response.ok) {
-        return response.json();
+        const transactions = await response.json();
+
+        return transactions?.map((transaction) => ({
+          ...transaction,
+          txTime: new Date(transaction.txTime),
+        }));
       }
     },
   });

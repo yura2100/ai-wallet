@@ -47,7 +47,7 @@ export function ActivityList({
                   {tx.amount} {tx.symbol}
                 </span>
                 <span className="text-sm text-muted-foreground">
-                  {tx.txTime.toString()}
+                  {tx.txTime.toUTCString()}
                 </span>
                 <a
                   href={getBlockExplorerUrl(tx.symbol, tx.txHash)}
