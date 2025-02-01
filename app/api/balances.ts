@@ -11,17 +11,11 @@ const app = new Hono()
       "query",
       z.object({
         address: z.string(),
-        chain: z.string(),
+        chain: z.string().transform((val) => Number(val)),
       })
     ),
     async (c) => {
-      const address = c.req.query("address");
-      const chain = Number(c.req.query("chain"));
-
-      if (!address || !chain) {
-        throw new Error("Missing required parameters");
-      }
-
+      const { address, chain } = c.req.valid("query");
       const response = await getAllTokenBalances(address, chain);
       return c.json(response);
     }
@@ -32,17 +26,11 @@ const app = new Hono()
       "query",
       z.object({
         address: z.string(),
-        chain: z.string(),
+        chain: z.string().transform((val) => Number(val)),
       })
     ),
     async (c) => {
-      const address = c.req.query("address");
-      const chain = Number(c.req.query("chain"));
-
-      if (!address || !chain) {
-        throw new Error("Missing required parameters");
-      }
-
+      const { address, chain } = c.req.valid("query");
       const response = await getTotalBalanceUsd(address, chain);
       return c.json(response);
     }
