@@ -23,8 +23,6 @@ export async function getTotalBalanceUsd(address: string, chain: number) {
 
     const { data } = getTotalBalanceUsdSchema.parse(responseBody);
 
-    console.log(data);
-
     return {
       totalBalanceUsd: data[0]?.totalValue ?? 0,
     };

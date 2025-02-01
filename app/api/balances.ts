@@ -44,7 +44,6 @@ const app = new Hono()
       }
 
       const response = await getTotalBalanceUsd(address, chain);
-      console.log(response);
       return c.json(response);
     }
   );
