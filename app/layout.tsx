@@ -1,24 +1,27 @@
 "use client";
 
-import { Inter } from "next/font/google"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Wallet, MessageSquare } from "lucide-react"
-import type React from "react"
-import { usePathname } from "next/navigation"
-import './globals.css'
-import {ClientOnly} from "@/components/client-only";
-import {StoreProvider} from "@/store/store-provider";
+import { Inter } from "next/font/google";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Wallet, MessageSquare } from "lucide-react";
+import type React from "react";
+import { usePathname } from "next/navigation";
+import "./globals.css";
+import { ClientOnly } from "@/components/client-only";
+import { StoreProvider } from "@/store/store-provider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 function NavBar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav className="border-b">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <h1 className="text-xl font-bold">{pathname === "/" ? "Your Portfolio" : "AI Assistant"}</h1>
+        <h1 className="text-xl font-bold">
+          {pathname === "/" ? "Your Portfolio" : "AI Assistant"}
+        </h1>
         <div className="space-x-4">
           <Button asChild variant={pathname === "/" ? "default" : "ghost"}>
             <Link href="/" className="flex items-center space-x-2">
@@ -35,13 +38,13 @@ function NavBar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" className="dark">
@@ -49,12 +52,14 @@ export default function RootLayout({
         <div className="min-h-screen bg-background text-foreground">
           <NavBar />
           <main className="container mx-auto px-4 py-8">
-            <StoreProvider>
-              <ClientOnly>{children}</ClientOnly>
-            </StoreProvider>
+            <QueryClientProvider client={new QueryClient()}>
+              <StoreProvider>
+                <ClientOnly>{children}</ClientOnly>
+              </StoreProvider>
+            </QueryClientProvider>
           </main>
         </div>
       </body>
     </html>
-  )
+  );
 }
