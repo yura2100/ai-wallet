@@ -1,19 +1,9 @@
-import { Tabs, TabsContent } from "@/components/ui/tabs"
-import Image from "next/image"
-
-interface Token {
-  id: number
-  name: string
-  symbol: string
-  amount: number
-  value: number
-  price: number
-  priceChange: number
-  valueChange: number
-}
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Token } from "@/lib/okx-client";
+import Image from "next/image";
 
 interface WalletBalanceProps {
-  tokens: Token[]
+  tokens: Token[];
 }
 
 export function WalletBalance({ tokens }: WalletBalanceProps) {
@@ -24,31 +14,27 @@ export function WalletBalance({ tokens }: WalletBalanceProps) {
           <ul className="space-y-3">
             {tokens.map((token) => (
               <li
-                key={token.id}
+                key={token.tokenAddress}
                 className="flex items-center justify-between p-3 rounded-lg border transition-colors duration-200 ease-in-out hover:bg-muted"
               >
                 <div className="flex items-center space-x-3">
                   <Image
                     src={`/placeholder.svg?height=40&width=40&text=${token.symbol}`}
-                    alt={token.name}
+                    alt={token.symbol}
                     width={40}
                     height={40}
                     className="rounded-full"
                   />
                   <div>
-                    <h3 className="font-medium">{token.name}</h3>
+                    <h3 className="font-medium">{token.symbol}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {token.amount} {token.symbol}
+                      {token.balance} {token.symbol}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold">${token.value.toLocaleString()}</div>
-                  <div className={`text-sm ${token.priceChange >= 0 ? "text-green-500" : "text-red-500"}`}>
-                    {token.priceChange >= 0 ? "▲" : "▼"} {Math.abs(token.priceChange).toFixed(2)}%
-                  </div>
-                  <div className={`text-xs ${token.valueChange >= 0 ? "text-green-500" : "text-red-500"}`}>
-                    {token.valueChange >= 0 ? "+" : "-"}${Math.abs(token.valueChange).toLocaleString()}
+                  <div className="font-bold">
+                    ${token.usdBalance.toLocaleString()}
                   </div>
                 </div>
               </li>
@@ -57,6 +43,5 @@ export function WalletBalance({ tokens }: WalletBalanceProps) {
         </div>
       </TabsContent>
     </Tabs>
-  )
+  );
 }
-
