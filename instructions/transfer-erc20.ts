@@ -3,6 +3,7 @@ import {buildStepsStateAtom, failStep, inProgress, successStep} from "@/instruct
 import {InstructionContext} from "@/instructions/shared/instruction-context";
 import {getERC20Metadata, waitForTransactionReceipt} from "@/services/web3/shared";
 import {simulateTransferERC20, validateTransferERC20, writeTransferERC20} from "@/services/web3/transfer-erc20";
+import {truncateAddress} from "@/lib/utils";
 
 export type TransferERC20InstructionType = "transfer-erc20";
 export type TransferERC20InstructionParameters = {
@@ -27,8 +28,8 @@ export async function buildTransferERC20Instruction(params: TransferERC20Instruc
 
   const toWallet = ctx.wallets.find((wallet) => wallet.address === params.to);
   const metadata = await getERC20Metadata(params.token);
-  const name = `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} ${fromWallet.name} to ${toWallet?.name ?? params.to}`;
-  const description = `Transfer ${formatUnits(params.amount, metadata.decimals)} ${name} (${metadata.symbol}) ${fromWallet.name} to ${toWallet?.name ?? params.to}`;
+  const name = `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`;
+  const description = `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.name} (${metadata.symbol}) from ${fromWallet.address} to ${params.to}`;
   return {
     id: ctx.id,
     type: "transfer-erc20",
@@ -38,41 +39,41 @@ export async function buildTransferERC20Instruction(params: TransferERC20Instruc
     fields: [
       {
         name: "Token",
-        value: `${metadata.symbol} (${metadata.name})`,
-        displayValue: metadata.symbol,
+        displayValue: `${metadata.name} (${metadata.symbol})`,
+        value: params.token,
         copyable: true,
       },
       {
         name: "From",
-        displayValue: fromWallet.name,
+        displayValue: `@${fromWallet.name}`,
         value: fromWallet.address,
         copyable: true,
       },
       {
         name: "To",
-        displayValue: toWallet?.name ?? params.to,
+        displayValue: `${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
         value: params.to,
         copyable: true,
       },
       {
         name: "Amount",
-        displayValue: formatUnits(params.amount, metadata.decimals),
-        value: params.amount,
+        displayValue: `${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol}`,
+        value: params.amount.toString(),
         copyable: false,
       },
     ],
     steps: [
       {
         id: "transfer-erc20:validate",
-        name: `Check ${fromWallet.name} balance`,
+        name: `Check @${fromWallet.name} balance`,
       },
       {
         id: "transfer-erc20:simulate",
-        name: `Simulate transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} from ${fromWallet.name} to ${toWallet?.name ?? params.to}`,
+        name: `Simulate transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
       },
       {
         id: "transfer-erc20:write",
-        name: `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} from ${fromWallet.name} to ${toWallet?.name ?? params.to}`,
+        name: `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
       },
       {
         id: "transfer-erc20:wait",

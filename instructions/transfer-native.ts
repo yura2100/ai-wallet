@@ -3,6 +3,7 @@ import {InstructionContext} from "@/instructions/shared/instruction-context";
 import {validateTransferNative, writeTranasferNative} from "@/services/web3/transfer-native";
 import {buildStepsStateAtom, failStep, inProgress, successStep} from "@/instructions/shared/step-state";
 import {waitForTransactionReceipt} from "@/services/web3/shared";
+import {truncateAddress} from "@/lib/utils";
 
 export type TransferNativeInstructionType = "transfer-native";
 export type TransferNativeInstructionParameters = {
@@ -24,8 +25,8 @@ export async function buildTransferNativeInstruction(params: TransferNativeInstr
   }
 
   const toWallet = ctx.wallets.find((wallet) => wallet.address === params.to);
-  const name = `Transfer ${formatEther(params.amount)} ETH ${fromWallet.name} to ${toWallet?.name ?? params.to}`;
-  const description = `Transfer ${formatEther(params.amount)} Ether (ETH) ${fromWallet.name} to ${toWallet?.name ?? params.to}`;
+  const name = `Transfer ${formatEther(params.amount)} ETH from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`;
+  const description = `Transfer ${formatEther(params.amount)} Ether (ETH) from ${fromWallet.address} to ${params.to}`;
   return {
     id: ctx.id,
     type: "transfer-native",
@@ -35,31 +36,31 @@ export async function buildTransferNativeInstruction(params: TransferNativeInstr
     fields: [
       {
         name: "From",
-        displayValue: fromWallet.name,
+        displayValue: `@${fromWallet.name}`,
         value: fromWallet.address,
         copyable: true,
       },
       {
         name: "To",
-        displayValue: toWallet?.name ?? params.to,
+        displayValue: `${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
         value: params.to,
         copyable: true,
       },
       {
         name: "Amount",
-        displayValue: formatEther(params.amount),
-        value: params.amount,
+        displayValue: `${formatEther(params.amount)} ETH`,
+        value: params.amount.toString(),
         copyable: false,
       },
     ],
     steps: [
       {
         id: "transfer-native:validate",
-        name: `Check ${fromWallet.name} balance`,
+        name: `Check @${fromWallet.name} balance`,
       },
       {
         id: "transfer-native:write",
-        name: `Transfer ${formatEther(params.amount)} ${fromWallet.name} to ${toWallet?.name ?? params.to}`,
+        name: `Transfer ${formatEther(params.amount)} ETH from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
       },
       {
         id: "transfer-native:wait",
