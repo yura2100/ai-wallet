@@ -26,9 +26,9 @@ function buildContext(): InstructionContext {
   return {
     wallets,
     id: crypto.randomUUID(),
-    success: () => undefined,
-    fail: () => undefined,
-    inProgress: () => undefined,
+    success: () => true,
+    fail: () => true,
+    inProgress: () => true,
   };
 }
 

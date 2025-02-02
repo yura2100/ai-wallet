@@ -110,7 +110,7 @@ export function AIChat() {
   const { data } = useQuery({
     queryKey: ["instructions"],
     queryFn: async () => {
-      const { instructions, atom } = await buildWorkflow([
+      const { instructions, atom, execute } = await buildWorkflow([
         {
           type: "transfer-native",
           params: {
@@ -138,7 +138,7 @@ export function AIChat() {
           },
         },
       ]);
-      return { instructions, instructionsStateAtom: atom };
+      return { instructions, instructionsStateAtom: atom, execute };
     },
   });
 
@@ -247,7 +247,13 @@ export function AIChat() {
               return part;
             })}
           </div>
-          {message.mockInstructions && data && <Workflow instructions={data.instructions} instructionsStateAtom={data.instructionsStateAtom} />}
+          {message.mockInstructions && data && (
+            <Workflow
+              instructions={data.instructions}
+              instructionsStateAtom={data.instructionsStateAtom}
+              execute={data.execute}
+            />
+          )}
           {message.tokens && <WalletBalance tokens={message.tokens} />}
         </>
       );

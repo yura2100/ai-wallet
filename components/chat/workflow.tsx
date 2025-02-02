@@ -6,16 +6,18 @@ import {PrimitiveAtom} from "jotai";
 import {InstructionState} from "@/instructions/shared/instruction-state";
 import {useAtom} from "jotai/react";
 import {useState} from "react";
+import {useRunWorkflowMutation} from "@/hooks/use-run-workflow-mutation";
 
 type WorkflowProps = {
   instructions: InstructionType[];
   instructionsStateAtom: PrimitiveAtom<InstructionState[]>;
+  execute: () => Promise<void>;
 };
 
-export function Workflow({ instructions, instructionsStateAtom }: WorkflowProps) {
-  const [isApproved, setIsApproved] = useState(false);
+export function Workflow({ instructions, instructionsStateAtom, execute }: WorkflowProps) {
   const [isDeclined, setIsDeclined] = useState(false);
   const [instructionsState] = useAtom(instructionsStateAtom);
+  const { mutate, isIdle } = useRunWorkflowMutation();
 
   return (
     <div className="mt-4">
@@ -34,22 +36,16 @@ export function Workflow({ instructions, instructionsStateAtom }: WorkflowProps)
             />
           ))}
         </div>
-        {!isApproved && !isDeclined && (
+        {isIdle && !isDeclined && (
           <div className="mt-4 flex justify-end space-x-2">
             <Button
-              onClick={() => {
-                setIsApproved(false);
-                setIsDeclined(true);
-              }}
+              onClick={() => setIsDeclined(true)}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
               Decline
             </Button>
             <Button
-              onClick={() => {
-                setIsApproved(true);
-                setIsDeclined(false);
-              }}
+              onClick={() => mutate(execute)}
               className="bg-green-500 hover:bg-green-600 text-white"
             >
               Approve
