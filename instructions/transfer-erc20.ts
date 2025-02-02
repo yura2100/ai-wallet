@@ -28,7 +28,7 @@ export async function buildTransferERC20Instruction(params: TransferERC20Instruc
 
   const toWallet = ctx.wallets.find((wallet) => wallet.address === params.to);
   const metadata = await getERC20Metadata(params.token);
-  const name = `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`;
+  const name = `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} @${fromWallet.name} → ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`;
   const description = `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.name} (${metadata.symbol}) from ${fromWallet.address} to ${params.to}`;
   return {
     id: ctx.id,
@@ -69,11 +69,11 @@ export async function buildTransferERC20Instruction(params: TransferERC20Instruc
       },
       {
         id: "transfer-erc20:simulate",
-        name: `Simulate transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
+        name: `Simulate transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} @${fromWallet.name} → ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
       },
       {
         id: "transfer-erc20:write",
-        name: `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
+        name: `Transfer ${formatUnits(params.amount, metadata.decimals)} ${metadata.symbol} @${fromWallet.name} → ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
       },
       {
         id: "transfer-erc20:wait",

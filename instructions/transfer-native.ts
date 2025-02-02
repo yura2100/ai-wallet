@@ -25,7 +25,7 @@ export async function buildTransferNativeInstruction(params: TransferNativeInstr
   }
 
   const toWallet = ctx.wallets.find((wallet) => wallet.address === params.to);
-  const name = `Transfer ${formatEther(params.amount)} ETH from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`;
+  const name = `Transfer ${formatEther(params.amount)} ETH @${fromWallet.name} → ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`;
   const description = `Transfer ${formatEther(params.amount)} Ether (ETH) from ${fromWallet.address} to ${params.to}`;
   return {
     id: ctx.id,
@@ -60,7 +60,7 @@ export async function buildTransferNativeInstruction(params: TransferNativeInstr
       },
       {
         id: "transfer-native:write",
-        name: `Transfer ${formatEther(params.amount)} ETH from @${fromWallet.name} to ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
+        name: `Transfer ${formatEther(params.amount)} ETH @${fromWallet.name} → ${toWallet?.name ? `@${toWallet.name}` : truncateAddress(params.to)}`,
       },
       {
         id: "transfer-native:wait",
