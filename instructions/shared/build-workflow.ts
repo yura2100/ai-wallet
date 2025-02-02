@@ -55,8 +55,12 @@ export async function buildWorkflow(params: InstructionParameters[]) {
   const instructionsStateParams = instructions.map(({ ctx, instruction }) => ({ id: ctx.id, steps: instruction.atom }));
   const instructionsStateAtom = buildInstructionsStateAtom(instructionsStateParams);
 
+  for (const { ctx } of instructions) {
+    initContext(ctx, { instructions: instructionsStateAtom });
+  }
+
   const execute = async () => {
-    for (const { ctx, instruction } of instructions) {
+    for (const { instruction } of instructions) {
       await instruction.execute();
     }
   };
