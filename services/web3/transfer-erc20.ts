@@ -1,6 +1,7 @@
-import {Address, erc20Abi} from "viem";
+import {Address} from "viem";
 import {getPublicClient, getWalletClient} from "@/services/web3/shared";
 import {Wallet} from "@/store/wallets";
+import {ERC20_ABI} from "@/services/web3/abi/erc20-abi";
 
 type TransferNativeParameters = {
   token: Address;
@@ -13,7 +14,7 @@ export async function validateTransferERC20({ token, from, to, amount } : Transf
   const publicClient = getPublicClient();
   const balance = await publicClient.readContract({
     address: token,
-    abi: [erc20Abi],
+    abi: ERC20_ABI,
     functionName: "balanceOf",
     args: [from],
   });
@@ -27,7 +28,7 @@ export async function simulateTransferERC20({ token, from, to, amount } : Transf
   const publicClient = getPublicClient();
   await publicClient.simulateContract({
     address: token,
-    abi: [erc20Abi],
+    abi: ERC20_ABI,
     functionName: "transfer",
     args: [to, amount],
     account: from,
@@ -42,7 +43,7 @@ export function writeTransferERC20({ token, from, to, amount } : TransferNativeP
   const walletClient = getWalletClient(wallet);
   return walletClient.writeContract({
     address: token,
-    abi: [erc20Abi],
+    abi: ERC20_ABI,
     functionName: "transfer",
     args: [to, amount],
   });

@@ -2,6 +2,7 @@ import {Address, createPublicClient, createWalletClient, erc20Abi, Hex, http} fr
 import {base} from "viem/chains";
 import {Wallet} from "@/store/wallets";
 import {privateKeyToAccount} from "viem/accounts";
+import {ERC20_ABI} from "@/services/web3/abi/erc20-abi";
 
 export function getPublicClient() {
   return createPublicClient({
@@ -15,7 +16,7 @@ export function getWalletClient(wallet: Wallet) {
   return createWalletClient({
     account,
     chain: base,
-    transport: http(),
+    transport: http("https://base.llamarpc.com"),
   });
 }
 
@@ -28,7 +29,7 @@ export async function getERC20Metadata(token: Address) {
   const publicClient = getPublicClient();
   const config = {
     address: token,
-    abi: [erc20Abi],
+    abi: ERC20_ABI,
   } as const;
   const [name, symbol, decimals] = await publicClient.multicall({
     contracts: [
