@@ -16,15 +16,22 @@ export function buildInstructionsStateAtom(params: { id: string; steps: Primitiv
 
 export function successInstruction(instructions: PrimitiveAtom<InstructionState[]>, id: string) {
   const existingInstructions = store.get(instructions);
+  const currentInstruction = existingInstructions.find((instruction) => instruction.id === id);
+  if (!currentInstruction || currentInstruction.status !== "in-progress") return false;
+
   const updatedInstructions: InstructionState[] = existingInstructions.map((instruction) => {
     if (instruction.id !== id) return instruction;
     return {...instruction, status: "successfull"};
   });
   store.set(instructions, updatedInstructions);
+  return true;
 }
 
 export function failInstruction(instructions: PrimitiveAtom<InstructionState[]>, id: string) {
   const existingInstructions = store.get(instructions);
+  const currentInstruction = existingInstructions.find((instruction) => instruction.id === id);
+  if (!currentInstruction || currentInstruction.status !== "in-progress") return false;
+
   const failedInstructionIndex = existingInstructions.findIndex((instruction) => instruction.id === id);
   const updatedInstructions: InstructionState[] = existingInstructions.map((instruction, index) => {
     if (index < failedInstructionIndex) return instruction;
@@ -38,12 +45,18 @@ export function failInstruction(instructions: PrimitiveAtom<InstructionState[]>,
     return {...instruction, status: "aborted"};
   });
   store.set(instructions, updatedInstructions);
+  return true;
 }
 
 export function inProgressInstruction(instructions: PrimitiveAtom<InstructionState[]>, id: string) {
-  const updatedInstructions: InstructionState[] = store.get(instructions).map((instruction) => {
+  const existingInstructions = store.get(instructions);
+  const currentInstruction = existingInstructions.find((instruction) => instruction.id === id);
+  if (!currentInstruction || currentInstruction.status !== "idle") return false;
+
+  const updatedInstructions: InstructionState[] = existingInstructions.map((instruction) => {
     if (instruction.id !== id) return instruction;
     return {...instruction, status: "in-progress"};
   });
   store.set(instructions, updatedInstructions);
+  return true;
 }

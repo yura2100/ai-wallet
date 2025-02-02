@@ -68,7 +68,7 @@ export async function buildTransferNativeInstruction(params: TransferNativeInstr
       },
     ],
     execute: async () => {
-      ctx.inProgress();
+      if (!ctx.inProgress()) return;
 
       try {
         inProgress(stepsStateAtom, "transfer-native:validate");

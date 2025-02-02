@@ -15,15 +15,22 @@ export function buildStepsStateAtom(ids: string[]) {
 
 export function successStep(steps: PrimitiveAtom<StepState[]>, id: string) {
   const existingSteps = store.get(steps);
+  const currentStep = existingSteps.find((step) => step.id === id);
+  if (!currentStep || currentStep.status !== "in-progress") return false;
+
   const updatedSteps: StepState[] = existingSteps.map((step) => {
     if (step.id !== id) return step;
     return {...step, status: "successfull"};
   });
   store.set(steps, updatedSteps);
+  return true;
 }
 
 export function failStep(steps: PrimitiveAtom<StepState[]>, id: string, error: string) {
   const existingSteps = store.get(steps);
+  const currentStep = existingSteps.find((step) => step.id === id);
+  if (!currentStep || currentStep.status !== "in-progress") return false;
+
   const failedStepIndex = existingSteps.findIndex((step) => step.id === id);
   const updatedSteps: StepState[] = existingSteps.map((step, index) => {
     if (index < failedStepIndex) return step;
@@ -31,12 +38,18 @@ export function failStep(steps: PrimitiveAtom<StepState[]>, id: string, error: s
     return {...step, status: "aborted"};
   });
   store.set(steps, updatedSteps);
+  return true;
 }
 
 export function inProgress(steps: PrimitiveAtom<StepState[]>, id: string) {
-  const updatedSteps: StepState[] = store.get(steps).map((step) => {
+  const existingSteps = store.get(steps);
+  const currentStep = existingSteps.find((step) => step.id === id);
+  if (!currentStep || currentStep.status !== "idle") return false
+
+  const updatedSteps: StepState[] = existingSteps.map((step) => {
     if (step.id !== id) return step;
     return {...step, status: "in-progress"};
   });
   store.set(steps, updatedSteps);
+  return true;
 }

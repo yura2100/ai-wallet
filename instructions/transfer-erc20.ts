@@ -81,7 +81,7 @@ export async function buildTransferERC20Instruction(params: TransferERC20Instruc
       },
     ],
     execute: async () => {
-      ctx.inProgress();
+      if (!ctx.inProgress()) return;
 
       try {
         inProgress(stepsStateAtom, "transfer-erc20:validate");
