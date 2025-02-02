@@ -5,8 +5,8 @@ import {Instruction as InstructionType} from "@/instructions/shared/build-workfl
 import {PrimitiveAtom} from "jotai";
 import {InstructionState} from "@/instructions/shared/instruction-state";
 import {useAtom} from "jotai/react";
-import {useState} from "react";
 import {useRunWorkflowMutation} from "@/hooks/use-run-workflow-mutation";
+import {useDeclineWorkflowMutation} from "@/hooks/use-decline-workflow-mutation";
 
 type WorkflowProps = {
   instructions: InstructionType[];
@@ -15,9 +15,9 @@ type WorkflowProps = {
 };
 
 export function Workflow({ instructions, instructionsStateAtom, execute }: WorkflowProps) {
-  const [isDeclined, setIsDeclined] = useState(false);
   const [instructionsState] = useAtom(instructionsStateAtom);
-  const { mutate, isIdle } = useRunWorkflowMutation();
+  const { mutate: run, isIdle: isNotRunning } = useRunWorkflowMutation();
+  const { mutate: decline, isIdle: isNotDeclined } = useDeclineWorkflowMutation();
 
   return (
     <div className="mt-4">
@@ -36,16 +36,16 @@ export function Workflow({ instructions, instructionsStateAtom, execute }: Workf
             />
           ))}
         </div>
-        {isIdle && !isDeclined && (
+        {isNotRunning && isNotDeclined && (
           <div className="mt-4 flex justify-end space-x-2">
             <Button
-              onClick={() => setIsDeclined(true)}
+              onClick={() => decline(instructionsStateAtom)}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
               Decline
             </Button>
             <Button
-              onClick={() => mutate(execute)}
+              onClick={() => run(execute)}
               className="bg-green-500 hover:bg-green-600 text-white"
             >
               Approve

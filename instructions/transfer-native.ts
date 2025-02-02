@@ -1,7 +1,7 @@
 import {Address, formatEther, Hex} from "viem";
 import {InstructionContext} from "@/instructions/shared/instruction-context";
 import {validateTransferNative, writeTranasferNative} from "@/services/web3/transfer-native";
-import {buildStepsStateAtom, failStep, inProgress, successStep} from "@/instructions/shared/step-state";
+import {buildStepsStateAtom, failStep, inProgressStep, successStep} from "@/instructions/shared/step-state";
 import {waitForTransactionReceipt} from "@/services/web3/shared";
 import {truncateAddress} from "@/lib/utils";
 
@@ -71,7 +71,7 @@ export async function buildTransferNativeInstruction(params: TransferNativeInstr
       if (!ctx.inProgress()) return;
 
       try {
-        inProgress(stepsStateAtom, "transfer-native:validate");
+        inProgressStep(stepsStateAtom, "transfer-native:validate");
         await validateTransferNative(params);
         successStep(stepsStateAtom, "transfer-native:validate");
         // @ts-ignore
@@ -83,7 +83,7 @@ export async function buildTransferNativeInstruction(params: TransferNativeInstr
 
       let hash: Hex;
       try {
-        inProgress(stepsStateAtom, "transfer-native:write");
+        inProgressStep(stepsStateAtom, "transfer-native:write");
         hash = await writeTranasferNative(params, fromWallet);
         successStep(stepsStateAtom, "transfer-native:write");
         // @ts-ignore
@@ -94,7 +94,7 @@ export async function buildTransferNativeInstruction(params: TransferNativeInstr
       }
 
       try {
-        inProgress(stepsStateAtom, "transfer-native:wait");
+        inProgressStep(stepsStateAtom, "transfer-native:wait");
         await waitForTransactionReceipt(hash);
         successStep(stepsStateAtom, "transfer-native:wait");
         // @ts-ignore

@@ -1,7 +1,7 @@
 import {store} from "@/store/store-provider";
 import {atom, PrimitiveAtom} from "jotai";
 
-export type StepStatus = "idle" | "in-progress" | "successfull" | "failed" | "aborted";
+export type StepStatus = "idle" | "in-progress" | "successfull" | "failed" | "aborted" | "declined";
 export type StepState = {
   id: string;
   status: StepStatus;
@@ -41,7 +41,7 @@ export function failStep(steps: PrimitiveAtom<StepState[]>, id: string, error: s
   return true;
 }
 
-export function inProgress(steps: PrimitiveAtom<StepState[]>, id: string) {
+export function inProgressStep(steps: PrimitiveAtom<StepState[]>, id: string) {
   const existingSteps = store.get(steps);
   const currentStep = existingSteps.find((step) => step.id === id);
   if (!currentStep || currentStep.status !== "idle") return false
@@ -52,4 +52,12 @@ export function inProgress(steps: PrimitiveAtom<StepState[]>, id: string) {
   });
   store.set(steps, updatedSteps);
   return true;
+}
+
+export function declineSteps(steps: PrimitiveAtom<StepState[]>) {
+  const existingSteps = store.get(steps);
+  const updatedSteps: StepState[] = existingSteps.map((step) => {
+    return {...step, status: "declined"};
+  });
+  store.set(steps, updatedSteps);
 }

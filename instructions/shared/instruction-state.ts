@@ -1,8 +1,8 @@
 import {store} from "@/store/store-provider";
 import {atom, PrimitiveAtom} from "jotai";
-import {StepState} from "@/instructions/shared/step-state";
+import {declineSteps, StepState} from "@/instructions/shared/step-state";
 
-export type InstructionStatus = "idle" | "in-progress" | "successfull" | "failed" | "aborted";
+export type InstructionStatus = "idle" | "in-progress" | "successfull" | "failed" | "aborted" | "declined";
 export type InstructionState = {
   id: string;
   status: InstructionStatus;
@@ -58,5 +58,17 @@ export function inProgressInstruction(instructions: PrimitiveAtom<InstructionSta
     return {...instruction, status: "in-progress"};
   });
   store.set(instructions, updatedInstructions);
+  return true;
+}
+
+export function declineInstructions(instruction: PrimitiveAtom<InstructionState[]>) {
+  const existingInstructions = store.get(instruction);
+  const updatedInstructions: InstructionState[] = existingInstructions.map((instruction) => {
+    // Mutate the steps of the declined instruction
+    declineSteps(instruction.steps);
+
+    return {...instruction, status: "declined"};
+  });
+  store.set(instruction, updatedInstructions);
   return true;
 }

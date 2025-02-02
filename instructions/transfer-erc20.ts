@@ -1,5 +1,5 @@
 import {Address, formatUnits, Hex} from "viem";
-import {buildStepsStateAtom, failStep, inProgress, successStep} from "@/instructions/shared/step-state";
+import {buildStepsStateAtom, failStep, inProgressStep, successStep} from "@/instructions/shared/step-state";
 import {InstructionContext} from "@/instructions/shared/instruction-context";
 import {getERC20Metadata, waitForTransactionReceipt} from "@/services/web3/shared";
 import {simulateTransferERC20, validateTransferERC20, writeTransferERC20} from "@/services/web3/transfer-erc20";
@@ -84,7 +84,7 @@ export async function buildTransferERC20Instruction(params: TransferERC20Instruc
       if (!ctx.inProgress()) return;
 
       try {
-        inProgress(stepsStateAtom, "transfer-erc20:validate");
+        inProgressStep(stepsStateAtom, "transfer-erc20:validate");
         await validateTransferERC20(params);
         successStep(stepsStateAtom, "transfer-erc20:validate");
         // @ts-ignore
@@ -95,7 +95,7 @@ export async function buildTransferERC20Instruction(params: TransferERC20Instruc
       }
 
       try {
-        inProgress(stepsStateAtom, "transfer-erc20:simulate");
+        inProgressStep(stepsStateAtom, "transfer-erc20:simulate");
         await simulateTransferERC20(params);
         successStep(stepsStateAtom, "transfer-erc20:simulate");
         // @ts-ignore
@@ -107,7 +107,7 @@ export async function buildTransferERC20Instruction(params: TransferERC20Instruc
 
       let hash: Hex;
       try {
-        inProgress(stepsStateAtom, "transfer-erc20:write");
+        inProgressStep(stepsStateAtom, "transfer-erc20:write");
         hash = await writeTransferERC20(params, fromWallet);
         successStep(stepsStateAtom, "transfer-erc20:write");
         // @ts-ignore
@@ -118,7 +118,7 @@ export async function buildTransferERC20Instruction(params: TransferERC20Instruc
       }
 
       try {
-        inProgress(stepsStateAtom, "transfer-erc20:wait");
+        inProgressStep(stepsStateAtom, "transfer-erc20:wait");
         await waitForTransactionReceipt(hash);
         successStep(stepsStateAtom, "transfer-erc20:wait");
         // @ts-ignore
